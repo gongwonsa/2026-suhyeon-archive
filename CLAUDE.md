@@ -58,7 +58,7 @@
 
 - `works`: id, work_no(등록 순서대로 한 번 부여하는 고정 전시 번호, 재사용·변경 없음), title, artist_name, genre_id, description, link_url, is_ai, thumb_path, status(`대기`/`공개`/`숨김`/`삭제요청`), created_at, updated_at
 - `work_edits`: id, work_id, edited_at, before_json, after_json (화면 노출 금지, 교사 최근 수정 탭에서만 조회)
-- `consents`: id, work_id, consent_version, agreed_at, agreed_public, agreed_face_photo (선택)
+- `consents`: id, work_id, consent_version, agreed_at, agreed_public
 - `genres`: id, code, label, sort_order
 - `settings`: key, value (접속 코드 해시, 변경 시각)
 - `teachers`: email
@@ -82,7 +82,8 @@
 ## 7. 개인정보와 동의
 
 - 업로드 화면 상단에 동의 전문을 접기 영역으로 제공합니다. 기본은 접힌 상태.
-- 체크 항목: 개인정보 수집·이용 (필수), 작품 공개 전시 (필수), 얼굴·신체가 나온 사진 포함 (선택)
+- 체크 항목: 개인정보 수집·이용 (필수), 작품 공개 전시 (필수)
+- 학생 사진은 사용하지 않습니다. 업로드 화면에 얼굴·신체가 나온 사진을 올리지 말라고 안내합니다.
 - 만 14세 미만 학생의 법정대리인 동의는 학교 가정통신문으로 받습니다. 사이트에서 따로 받지 않습니다.
 - 동의 시점과 동의 버전을 `consents`에 저장합니다.
 - 보유 기간: 2027.2.28. 이 날짜를 동의 문구, 푸터, 개인정보 처리방침에 동일하게 적습니다.
