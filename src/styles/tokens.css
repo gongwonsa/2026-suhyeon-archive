@@ -1,0 +1,46 @@
+/* DESIGN.md의 값을 그대로 옮긴 변수. 새 값을 임의로 추가하지 않는다. */
+:root {
+  --color-paper: #f6f3ee;
+  --color-surface: #ffffff;
+  --color-ink: #1e1b1c;
+  --color-ink-muted: #6e6567;
+  --color-rule: #d9d2cb;
+  --color-accent: #8a1c36;
+  --color-accent-deep: #6b1429;
+  --color-success: #2f6b3f;
+  --color-warning: #8a5a12;
+  --color-error: #a12626;
+
+  --genre-game: #8a1c36;
+  --genre-anim: #9a4422;
+  --genre-sim: #3d5a4c;
+  --genre-agent: #2f4a6e;
+  --genre-etc: #6e6567;
+
+  /* 배지 배경 (12%) */
+  --genre-game-bg: #f3e6ea;
+  --genre-anim-bg: #f6e9e2;
+  --genre-sim-bg: #e3ebe7;
+  --genre-agent-bg: #e4eaf2;
+  --genre-etc-bg: #ece9e7;
+
+  --font-title: 'Cafe24 Ssurround', sans-serif;
+  --font-label: 'Lee Seoyun', sans-serif;
+  --font-body: 'NanumSquare', sans-serif;
+
+  --text-page-title: 28px;
+  --text-work-title: 18px;
+  --text-base: 15px;
+  --text-small: 13px;
+  --line-body: 1.65;
+
+  --space-unit: 8px;
+  --space-section: 48px;
+  --space-card: 16px;
+  --space-column: 24px;
+  --space-card-bottom: 40px;
+
+  --page-max-width: 1280px;
+  --page-gutter-mobile: 16px;
+  --page-gutter-desktop: 32px;
+}

@@ -1,0 +1,28 @@
+/* 파일이 없으면 tokens.css의 대체 글꼴로 표시된다. */
+@font-face {
+  font-family: 'Cafe24 Ssurround';
+  src: url('/fonts/cafe24-ssurround.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Lee Seoyun';
+  src: url('/fonts/lee-seoyun.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NanumSquare';
+  src: url('/fonts/nanumsquare-regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'NanumSquare';
+  src: url('/fonts/nanumsquare-bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+}

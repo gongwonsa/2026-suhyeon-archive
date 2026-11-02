@@ -1,0 +1,9 @@
+글꼴 파일 넣는 위치 (눈누에서 내려받은 뒤 아래 이름으로 바꿔 넣으세요)
+
+cafe24-ssurround.woff2     카페24 써라운드 (제목)
+lee-seoyun.woff2           이서윤체 (라벨, 번호, 장르)
+nanumsquare-regular.woff2  나눔스퀘어 Regular (본문)
+nanumsquare-bold.woff2     나눔스퀘어 Bold (본문 강조)
+
+눈누에서 받은 파일이 ttf나 otf이면 woff2로 변환해 쓰면 용량이 줄어듭니다.
+파일을 넣기 전에는 기본 글꼴로 보입니다.
