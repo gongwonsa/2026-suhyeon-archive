@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>2026 수현중 소프트웨어의 날 작품 전시</title>
+    <script>
+      // GitHub Pages는 /works 같은 경로를 직접 열면 이 파일을 준다.
+      // 경로를 쿼리로 옮겨 index.html로 보내고, index.html이 원래 주소로 되돌린다.
+      var pathSegmentsToKeep = 1
+      var l = window.location
+      l.replace(
+        l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+          l.pathname.split('/').slice(0, 1 + pathSegmentsToKeep).join('/') + '/?/' +
+          l.pathname.slice(1).split('/').slice(pathSegmentsToKeep).join('/').replace(/&/g, '~and~') +
+          (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+          l.hash,
+      )
+    </script>
+  </head>
+  <body></body>
+</html>
