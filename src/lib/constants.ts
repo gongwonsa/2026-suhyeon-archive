@@ -21,7 +21,7 @@ export const PRIVACY_EFFECTIVE_DATE = '2026년 11월 1일'
 // Supabase 프로젝트를 만든 뒤 실제 리전으로 바꾼다. 배포 전에 반드시 채운다.
 export const DATA_REGION = '리전 확정 후 기재'
 
-export const RETENTION_DATE = '2027.2.28'
+export const RETENTION_TEXT = '전시 운영이 끝날 때까지'
 
 export interface Genre {
   id: number

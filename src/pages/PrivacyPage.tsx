@@ -3,7 +3,7 @@ import {
   DATA_REGION,
   PRIVACY_EFFECTIVE_DATE,
   PRIVACY_OFFICER,
-  RETENTION_DATE,
+  RETENTION_TEXT,
   SCHOOL_ADDRESS,
   SCHOOL_NAME,
   SITE_TITLE,
@@ -63,7 +63,7 @@ export function PrivacyPage() {
 
       <h2>2. 보유 기간과 파기</h2>
       <p>
-        개인정보는 {RETENTION_DATE}까지 보유합니다. 기간이 끝나거나 삭제 요청이 처리되면 지체 없이 파기합니다. 전자
+        개인정보는 {RETENTION_TEXT} 보유합니다. 전시가 끝나거나 삭제 요청이 처리되면 지체 없이 파기합니다. 전자
         파일은 복구할 수 없는 방법으로 삭제합니다.
       </p>
 
