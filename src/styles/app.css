@@ -124,6 +124,66 @@ a:hover {
   color: var(--color-ink-muted);
 }
 
+/* 작품 상세 */
+.detail-back {
+  margin-bottom: var(--space-card);
+  font-family: var(--font-label);
+}
+
+.detail {
+  display: grid;
+  gap: var(--space-section);
+}
+
+.detail-ai-notice {
+  margin-bottom: var(--space-card);
+  padding: var(--space-unit) var(--space-card);
+  border: 1px solid var(--color-rule);
+  background: var(--color-paper);
+  color: var(--color-warning);
+}
+
+.detail-meta {
+  font-family: var(--font-label);
+}
+
+.detail-title {
+  margin-block: var(--space-unit);
+  overflow-wrap: anywhere;
+}
+
+.detail-artist {
+  color: var(--color-ink-muted);
+  font-family: var(--font-label);
+  overflow-wrap: anywhere;
+}
+
+.detail-description {
+  margin-block: var(--space-card);
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+.detail-link-button {
+  display: inline-block;
+  padding: var(--space-unit) var(--space-card);
+  background: var(--color-accent);
+  color: var(--color-surface);
+  font-family: var(--font-label);
+  text-decoration: none;
+}
+
+.detail-link-button:hover {
+  background: var(--color-accent-deep);
+  color: var(--color-surface);
+}
+
+.detail-link-note {
+  margin-top: var(--space-unit);
+  color: var(--color-ink-muted);
+  font-size: var(--text-small);
+}
+
 /* 개인정보 처리방침 */
 .privacy h2 {
   margin-top: var(--space-section);
@@ -320,5 +380,10 @@ a:hover {
 
   .work-grid {
     columns: 4;
+  }
+
+  .detail {
+    grid-template-columns: minmax(0, 720px) minmax(0, 1fr);
+    align-items: start;
   }
 }

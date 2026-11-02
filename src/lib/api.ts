@@ -17,6 +17,11 @@ export interface Work {
   updated_at: string
 }
 
+// 공개 작품 하나를 가져온다. 공개 상태가 아니거나 없으면 null을 돌려준다.
+export async function fetchPublicWork(id: number): Promise<Work | null> {
+  return sampleWorks.find((work) => work.id === id && work.status === '공개') ?? null
+}
+
 // 공개 작품을 최신순으로 가져온다. 지금은 샘플이며 나중에 이 함수 안만 Supabase로 바꾼다.
 export async function fetchPublicWorks(): Promise<Work[]> {
   return sampleWorks
