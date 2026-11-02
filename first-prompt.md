@@ -78,7 +78,7 @@
    - 글꼴 파일 네 개는 `public/fonts/`에 둡니다 (파일 이름은 `public/fonts/글꼴_설치_안내.txt` 참고). `@font-face`로 등록하고 `--font-title`, `--font-label`, `--font-body` 변수로 씁니다. 파일이 없으면 기본 글꼴로 대체되게 합니다.
 5. 라우팅: `/works`, `/works/:id`, `/upload`, `/admin`, `/privacy` 경로만 생성하고 각 페이지는 제목 한 줄과 빈 상태 문구만 표시
 6. 공개 전시 `/works` 화면 구현
-   - 헤더: 제목 "2026 수현중 소프트웨어의 날 작품 전시", 오른쪽 `후기 작성 ↗` 링크 (URL은 `src/lib/constants.ts`의 `FEEDBACK_FORM_URL`, 지금은 빈 문자열로 두고 주석 달기)
+   - 헤더: 제목 "2026 수현중 소프트웨어의 날 온라인 작품 전시회", 오른쪽 `후기 작성 ↗` 링크 (URL은 `src/lib/constants.ts`의 `FEEDBACK_FORM_URL`, 지금은 빈 문자열로 두고 주석 달기)
    - 장르 필터: 텍스트 목록, 단일 선택, 선택 상태는 장르 색 밑줄
    - 검색 입력창 (제목·이름 기준)
    - 벽 배치(masonry): CSS `columns`로 구현. 모바일 2열, 태블릿 3열, 데스크톱 4열. 썸네일은 원본 비율 유지 (`height: auto`), 고정 비율이나 자르기 금지. 카드는 `break-inside: avoid`

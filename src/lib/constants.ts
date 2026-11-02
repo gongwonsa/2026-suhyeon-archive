@@ -1,4 +1,4 @@
-export const SITE_TITLE = '2026 수현중 소프트웨어의 날 작품 전시'
+export const SITE_TITLE = '2026 수현중 소프트웨어의 날 온라인 작품 전시회'
 
 export const INTRO_TEXT =
   '수현중 학생들의 정보 수업 및 동아리 작품 온라인 전시페이지입니다. 다양한 작품을 즐기고 후기를 남겨 주세요.'
@@ -6,7 +6,20 @@ export const INTRO_TEXT =
 // 후기 작성 구글 폼 주소. 폼을 만든 뒤 여기에 넣는다. 비어 있으면 헤더 링크가 비활성으로 표시된다.
 export const FEEDBACK_FORM_URL = ''
 
-export const TEACHER_CONTACT_TEXT = '게시 중단이나 삭제는 지도교사에게 직접 연락해 주세요.'
+export const TEACHER_CONTACT_TEXT = '게시 중단이나 삭제를 원하면 지도교사에게 직접 연락해 주세요.'
+
+export const SCHOOL_NAME = '수현중학교'
+
+export const SCHOOL_ADDRESS = '경기도 화성시 봉담읍 상리3길 136'
+
+export const PRIVACY_OFFICER = '수현중학교 정보교사'
+
+export const CONTACT_EMAIL = 'parksa1236@gmail.com'
+
+export const PRIVACY_EFFECTIVE_DATE = '2026년 11월 1일'
+
+// Supabase 프로젝트를 만든 뒤 실제 리전으로 바꾼다. 배포 전에 반드시 채운다.
+export const DATA_REGION = '리전 확정 후 기재'
 
 export const RETENTION_DATE = '2027.2.28'
 

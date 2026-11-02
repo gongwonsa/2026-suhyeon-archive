@@ -8,8 +8,9 @@ export function Footer() {
         <p>
           <Link to="/privacy">개인정보 처리방침</Link>
         </p>
-        <p>{TEACHER_CONTACT_TEXT}</p>
-        <p>보유 기간: {RETENTION_DATE}까지</p>
+        <p>
+          이 사이트의 작품과 개인정보는 {RETENTION_DATE}까지 보관합니다. {TEACHER_CONTACT_TEXT}
+        </p>
       </div>
     </footer>
   )
