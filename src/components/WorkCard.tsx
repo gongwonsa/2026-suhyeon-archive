@@ -28,7 +28,10 @@ function DefaultThumb({ title }: { title: string }) {
 export function WorkCard({ work }: WorkCardProps) {
   const genre = GENRES.find((item) => item.id === work.genre_id)
   const genreStyle = genre
-    ? ({ '--genre-fg': `var(--genre-${genre.code})`, '--genre-bg': `var(--genre-${genre.code}-bg)` } as CSSProperties)
+    ? ({
+        '--genre-fg': `var(--genre-${genre.code}, var(--genre-etc))`,
+        '--genre-bg': `var(--genre-${genre.code}-bg, var(--genre-etc-bg))`,
+      } as CSSProperties)
     : undefined
 
   return (
@@ -42,7 +45,7 @@ export function WorkCard({ work }: WorkCardProps) {
       </Link>
       <div className="work-label">
         <div className="work-label-row">
-          <span className="work-number">No. {String(work.id).padStart(3, '0')}</span>
+          <span className="work-number">No. {String(work.work_no).padStart(3, '0')}</span>
           {genre && (
             <span className="work-genre" style={genreStyle}>
               {genre.label}

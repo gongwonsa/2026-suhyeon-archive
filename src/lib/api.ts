@@ -4,6 +4,7 @@ export type WorkStatus = '대기' | '공개' | '숨김' | '삭제요청'
 
 export interface Work {
   id: number
+  work_no: number // 등록 순서대로 한 번 부여하는 고정 전시 번호
   title: string
   artist_name: string
   genre_id: number

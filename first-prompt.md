@@ -40,7 +40,7 @@
 │  │  ├─ supabase.ts               anon key 클라이언트
 │  │  └─ constants.ts              장르, 구글 폼 URL, INTRO_TEXT, 교사 연락처
 │  ├─ data/
-│  │  └─ sample-works.ts           샘플 작품 14개 (실제 학생 데이터 아님)
+│  │  └─ sample-works.ts           샘플 작품 12개 (실제 학생 데이터 아님)
 │  ├─ styles/
 │  │  ├─ tokens.css                DESIGN.md 색상, 글꼴, 간격 변수
 │  │  └─ fonts.css                 @font-face 등록 (public/fonts 참조)

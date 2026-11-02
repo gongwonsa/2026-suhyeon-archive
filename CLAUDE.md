@@ -56,7 +56,7 @@
 
 ## 5. 데이터 모델
 
-- `works`: id, title, artist_name, genre_id, description, link_url, is_ai, thumb_path, status(`대기`/`공개`/`숨김`/`삭제요청`), created_at, updated_at
+- `works`: id, work_no(등록 순서대로 한 번 부여하는 고정 전시 번호, 재사용·변경 없음), title, artist_name, genre_id, description, link_url, is_ai, thumb_path, status(`대기`/`공개`/`숨김`/`삭제요청`), created_at, updated_at
 - `work_edits`: id, work_id, edited_at, before_json, after_json (화면 노출 금지, 교사 최근 수정 탭에서만 조회)
 - `consents`: id, work_id, consent_version, agreed_at, agreed_public, agreed_face_photo (선택)
 - `genres`: id, code, label, sort_order

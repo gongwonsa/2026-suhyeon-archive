@@ -10,11 +10,9 @@ export const TEACHER_CONTACT_TEXT = '게시 중단이나 삭제는 지도교사�
 
 export const RETENTION_DATE = '2027.2.28'
 
-export type GenreCode = 'game' | 'anim' | 'sim' | 'agent' | 'etc'
-
 export interface Genre {
   id: number
-  code: GenreCode
+  code: string // 색 변수가 없는 새 장르는 --genre-etc 색을 쓴다
   label: string
   sort_order: number
 }

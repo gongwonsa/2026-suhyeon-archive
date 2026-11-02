@@ -8,7 +8,11 @@ interface GenreFilterProps {
 
 const OPTIONS = [
   { id: null, label: '전체', color: 'var(--color-accent)' },
-  ...GENRES.map((genre) => ({ id: genre.id, label: genre.label, color: `var(--genre-${genre.code})` })),
+  ...GENRES.map((genre) => ({
+    id: genre.id,
+    label: genre.label,
+    color: `var(--genre-${genre.code}, var(--genre-etc))`,
+  })),
 ]
 
 export function GenreFilter({ selectedId, onSelect }: GenreFilterProps) {

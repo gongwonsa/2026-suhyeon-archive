@@ -12,6 +12,7 @@ function sampleWork(number: number, genreId: number, thumbPath: string | null, i
   const date = `2026-10-${padded}T09:00:00+09:00`
   return {
     id: number,
+    work_no: number,
     title: `샘플 작품 ${padded}`,
     artist_name: `샘플 이름 ${padded}`,
     genre_id: genreId,
