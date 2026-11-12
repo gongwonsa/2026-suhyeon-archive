@@ -13,7 +13,8 @@ const DEFAULT_GENRES = [
   [2, 'anim', '애니메이션', 2],
   [3, 'sim', '시뮬레이션', 3],
   [4, 'agent', 'AI 에이전트 도구(바이브코딩)', 4],
-  [5, 'etc', '기타', 5],
+  [6, 'study', '학습 지원', 5],
+  [5, 'etc', '기타', 6],
 ]
 
 const PUBLIC_CACHE_KEY = 'public-data-v1'

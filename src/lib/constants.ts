@@ -33,5 +33,6 @@ export const GENRES: Genre[] = [
   { id: 2, code: 'anim', label: '애니메이션', sort_order: 2 },
   { id: 3, code: 'sim', label: '시뮬레이션', sort_order: 3 },
   { id: 4, code: 'agent', label: 'AI 에이전트 도구(바이브코딩)', sort_order: 4 },
-  { id: 5, code: 'etc', label: '기타', sort_order: 5 },
+  { id: 6, code: 'study', label: '학습 지원', sort_order: 5 },
+  { id: 5, code: 'etc', label: '기타', sort_order: 6 },
 ]

@@ -39,6 +39,6 @@ export const sampleWorks: SampleWork[] = [
   sampleWork(8, 3, null),
   sampleWork(9, 4, sampleThumb(800, 600, '#E4EAF2'), true),
   sampleWork(10, 5, sampleThumb(700, 900, '#6E6567')),
-  sampleWork(11, 1, null),
-  sampleWork(12, 2, sampleThumb(900, 600, '#F6E9E2')),
+  sampleWork(11, 6, null),
+  sampleWork(12, 6, sampleThumb(900, 600, '#F6E9E2')),
 ]
