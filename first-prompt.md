@@ -24,7 +24,6 @@
 │  │  ├─ WorksPage.tsx             /works 공개 전시
 │  │  ├─ WorkDetailPage.tsx        /works/:id 상세
 │  │  ├─ UploadPage.tsx            /upload 접속, 등록, 목록, 수정
-│  │  ├─ AdminPage.tsx             /admin 교사 관리
 │  │  └─ PrivacyPage.tsx           /privacy 개인정보 처리방침
 │  ├─ components/
 │  │  ├─ Header.tsx                제목, 소개 문구, 후기 작성 링크
@@ -36,8 +35,7 @@
 │  │  ├─ WorkForm.tsx              등록·수정 공용 폼 (AI 사용 체크 포함)
 │  │  └─ ConsentBox.tsx            동의 항목과 전문 펼치기
 │  ├─ lib/
-│  │  ├─ api.ts                    데이터 접근 (지금은 샘플, 나중에 Supabase)
-│  │  ├─ supabase.ts               anon key 클라이언트
+│  │  ├─ api.ts                    데이터 접근 (웹 앱 주소가 없으면 개발용 샘플)
 │  │  └─ constants.ts              장르, 구글 폼 URL, INTRO_TEXT, 교사 연락처
 │  ├─ data/
 │  │  └─ sample-works.ts           샘플 작품 12개 (실제 학생 데이터 아님)
@@ -45,13 +43,10 @@
 │  │  ├─ tokens.css                DESIGN.md 색상, 글꼴, 간격 변수
 │  │  └─ fonts.css                 @font-face 등록 (public/fonts 참조)
 │  └─ main.tsx
-├─ supabase/                       2단계 이후에 만듭니다
-│  ├─ migrations/
-│  ├─ functions/
-│  │  ├─ upload-auth/
-│  │  ├─ work-save/
-│  │  └─ admin-action/
-│  └─ seed.sql                     실제 값 금지
+├─ apps-script/                    스프레드시트에 붙여 넣는 Apps Script (비밀 값 금지)
+│  ├─ Code.gs                      웹 앱 API
+│  ├─ appsscript.json              웹 앱 설정
+│  └─ README.md                    시트 만들기와 배포 방법
 ├─ .github/workflows/
 │  └─ deploy.yml                   main 푸시 시 GitHub Pages 배포
 ├─ .env.example                    키 이름만, 값은 비움
