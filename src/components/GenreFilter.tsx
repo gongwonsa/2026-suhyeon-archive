@@ -9,11 +9,12 @@ interface GenreFilterProps {
 
 export function GenreFilter({ genres, selectedId, onSelect }: GenreFilterProps) {
   const options = [
-    { id: null, label: '전체', color: 'var(--color-accent)' },
+    { id: null, label: '전체', color: 'var(--color-accent)', background: 'var(--color-surface)' },
     ...genres.map((genre) => ({
       id: genre.id,
       label: genre.label,
       color: `var(--genre-${genre.code}, var(--genre-etc))`,
+      background: `var(--genre-${genre.code}-bg, var(--genre-etc-bg))`,
     })),
   ]
 
@@ -24,7 +25,7 @@ export function GenreFilter({ genres, selectedId, onSelect }: GenreFilterProps) 
           <button
             type="button"
             className="genre-filter-button"
-            style={{ '--filter-color': option.color } as CSSProperties}
+            style={{ '--filter-color': option.color, '--filter-bg': option.background } as CSSProperties}
             aria-pressed={option.id === selectedId}
             onClick={() => onSelect(option.id)}
           >

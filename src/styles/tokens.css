@@ -7,6 +7,7 @@
   --color-rule: #d9d2cb;
   --color-accent: #8a1c36;
   --color-accent-deep: #6b1429;
+  --color-secondary: #2f4a6e;
   --color-success: #2f6b3f;
   --color-warning: #8a5a12;
   --color-error: #a12626;
@@ -15,6 +16,7 @@
   --genre-anim: #9a4422;
   --genre-sim: #3d5a4c;
   --genre-agent: #2f4a6e;
+  --genre-study: #5b3f73;
   --genre-etc: #6e6567;
 
   /* 배지 배경 (12%) */
@@ -22,6 +24,7 @@
   --genre-anim-bg: #f6e9e2;
   --genre-sim-bg: #e3ebe7;
   --genre-agent-bg: #e4eaf2;
+  --genre-study-bg: #ebe7ef;
   --genre-etc-bg: #ece9e7;
 
   --font-title: 'Cafe24 Ssurround', sans-serif;

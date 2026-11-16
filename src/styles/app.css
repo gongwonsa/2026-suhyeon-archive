@@ -87,9 +87,61 @@ a:hover {
 
 .header-row {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
+  flex-direction: column;
+  align-items: stretch;
   gap: var(--space-card);
+}
+
+.header-brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-unit);
+  min-width: 0;
+}
+
+.header-logo {
+  display: block;
+  width: auto;
+  max-width: 160px;
+  height: 48px;
+}
+
+.header-logo-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 1px dashed var(--color-ink-muted);
+  color: var(--color-ink-muted);
+  font-family: var(--font-label);
+  font-size: var(--text-small);
+}
+
+@media (min-width: 768px) {
+  .header-row {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-brand {
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-card);
+  }
+}
+
+@media (min-width: 1024px) {
+  .header-logo {
+    height: 56px;
+  }
+
+  .header-logo-placeholder {
+    width: 56px;
+    height: 56px;
+  }
 }
 
 .header-title a {
@@ -100,25 +152,48 @@ a:hover {
 .header-links {
   display: flex;
   flex: none;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-}
-
-@media (min-width: 768px) {
-  .header-links {
-    flex-direction: row;
-    gap: var(--space-card);
-  }
+  flex-wrap: wrap;
+  gap: var(--space-unit);
 }
 
 .header-link {
-  flex: none;
+  display: block;
+  padding: 6px 14px;
+  border: 1px solid var(--color-accent);
   font-family: var(--font-label);
   font-size: var(--text-base);
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.header-link-primary {
+  background: var(--color-accent);
+  color: var(--color-surface);
+}
+
+.header-link-secondary {
+  border-color: var(--color-secondary);
+  background: var(--color-secondary);
+  color: var(--color-surface);
+}
+
+.header-link-primary:hover {
+  border-color: var(--color-accent-deep);
+  background: var(--color-accent-deep);
+  color: var(--color-surface);
+}
+
+.header-link-secondary:hover {
+  border-color: var(--color-ink);
+  background: var(--color-ink);
+  color: var(--color-surface);
 }
 
 .header-link-disabled {
+  border-color: var(--color-rule);
   color: var(--color-ink-muted);
 }
 
@@ -244,32 +319,28 @@ a:hover {
 
 .genre-filter {
   display: flex;
-  gap: var(--space-card);
-  padding: 4px;
-  margin: -4px;
-  overflow-x: auto;
-  white-space: nowrap;
+  flex-wrap: wrap;
+  gap: var(--space-unit);
 }
 
+/* 장르 버튼: 평소에는 장르 배경색(12%)과 장르 글자색, 선택하면 장르 색으로 채운다. */
 .genre-filter-button {
-  padding: 0 0 4px;
-  border: 0;
-  border-bottom: 2px solid transparent;
+  padding: 6px 14px;
+  border: 1px solid var(--filter-color);
   border-radius: 0;
-  background: none;
-  color: var(--color-ink-muted);
+  background: var(--filter-bg);
+  color: var(--filter-color);
   font-family: var(--font-label);
   font-size: var(--text-base);
+  font-weight: 700;
+  line-height: 1.4;
   cursor: pointer;
 }
 
-.genre-filter-button:hover {
-  color: var(--color-ink);
-}
-
+.genre-filter-button:hover,
 .genre-filter-button[aria-pressed='true'] {
-  border-bottom-color: var(--filter-color);
-  color: var(--color-ink);
+  background: var(--filter-color);
+  color: var(--color-surface);
 }
 
 .search-input {
