@@ -22,6 +22,14 @@ const PUBLIC_CACHE_SECONDS = 300
 const CACHE_VALUE_LIMIT = 100000
 const THUMB_PATTERN = /^(data:image\/(png|jpeg|webp);base64,|https:\/\/)/
 
+const LOGIN_FAIL_KEY = 'login-failures'
+const LOGIN_FAIL_LIMIT = 20
+const LOGIN_FAIL_WINDOW_SECONDS = 600
+const SESSION_SECONDS = 3 * 60 * 60
+const SESSION_TOKEN_PATTERN = /^[0-9a-f]{64}$/
+const ACCESS_CODE_MIN_LENGTH = 4
+const ACCESS_CODE_MAX_LENGTH = 50
+
 function doGet(e) {
   const action = e && e.parameter ? e.parameter.action : ''
   if (action !== 'public') {
@@ -33,6 +41,82 @@ function doGet(e) {
     console.error('공개 목록을 만들지 못했습니다.', error)
     return json_({ ok: false })
   }
+}
+
+// 쓰기 요청은 POST 본문(JSON 문자열)으로 받는다. 브라우저가 사전 요청 없이 보내도록 text/plain으로 보낸다.
+function doPost(e) {
+  let request
+  try {
+    request = JSON.parse(e.postData.contents)
+  } catch (error) {
+    return json_({ ok: false })
+  }
+  if (typeof request !== 'object' || request === null) {
+    return json_({ ok: false })
+  }
+  try {
+    if (request.action === 'login') return json_(login_(request.code))
+    if (request.action === 'session') return json_({ ok: isValidSession_(request.token) })
+    return json_({ ok: false })
+  } catch (error) {
+    console.error('요청을 처리하지 못했습니다.', error)
+    return json_({ ok: false })
+  }
+}
+
+// 접속 코드를 확인하고 세션 토큰을 발급한다. 실패 사유와 상관없이 같은 오류를 돌려준다.
+function login_(code) {
+  const cache = CacheService.getScriptCache()
+  const lock = LockService.getScriptLock()
+  lock.waitLock(5000)
+  try {
+    const failures = Number(cache.get(LOGIN_FAIL_KEY)) || 0
+    if (failures >= LOGIN_FAIL_LIMIT) {
+      return { ok: false, error: 'invalid' }
+    }
+    if (!isAccessCode_(code)) {
+      cache.put(LOGIN_FAIL_KEY, String(failures + 1), LOGIN_FAIL_WINDOW_SECONDS)
+      return { ok: false, error: 'invalid' }
+    }
+  } finally {
+    lock.releaseLock()
+  }
+
+  const token = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '')
+  const version = PropertiesService.getScriptProperties().getProperty('SESSION_VERSION')
+  cache.put('session:' + token, version, SESSION_SECONDS)
+  return { ok: true, token: token, expires_at: new Date(Date.now() + SESSION_SECONDS * 1000).toISOString() }
+}
+
+function isAccessCode_(code) {
+  if (typeof code !== 'string') return false
+  const properties = PropertiesService.getScriptProperties()
+  const hash = properties.getProperty('ACCESS_CODE_HASH')
+  const salt = properties.getProperty('ACCESS_CODE_SALT')
+  if (!hash || !salt) return false
+  return hashAccessCode_(salt, code.trim()) === hash
+}
+
+// 접속 코드를 바꾸면 세션 버전도 바뀌어 기존 세션이 모두 무효가 된다.
+function isValidSession_(token) {
+  if (typeof token !== 'string' || !SESSION_TOKEN_PATTERN.test(token)) return false
+  const version = CacheService.getScriptCache().get('session:' + token)
+  return version !== null && version === PropertiesService.getScriptProperties().getProperty('SESSION_VERSION')
+}
+
+function hashAccessCode_(salt, code) {
+  const bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, salt + code, Utilities.Charset.UTF_8)
+  return Utilities.base64Encode(bytes)
+}
+
+function setAccessCode_(code) {
+  const salt = Utilities.getUuid()
+  PropertiesService.getScriptProperties().setProperties({
+    ACCESS_CODE_SALT: salt,
+    ACCESS_CODE_HASH: hashAccessCode_(salt, code),
+    ACCESS_CODE_CHANGED_AT: new Date().toISOString(),
+    SESSION_VERSION: Utilities.getUuid(),
+  })
 }
 
 // 공개 작품과 장르를 돌려준다. 공개 상태가 아닌 작품과 공개하지 않는 열은 포함하지 않는다.
@@ -126,7 +210,40 @@ function json_(data) {
   return ContentService.createTextOutput(JSON.stringify(data)).setMimeType(ContentService.MimeType.JSON)
 }
 
-// 처음 한 번 편집기에서 실행한다. 탭과 머리글, 기본 장르를 만든다. 이미 있는 내용은 지우지 않는다.
+// 시트를 열 때 상단에 관리 메뉴를 만든다.
+function onOpen() {
+  SpreadsheetApp.getUi()
+    .createMenu('전시 관리')
+    .addItem('접속 코드 변경', 'menuChangeAccessCode')
+    .addItem('사이트에 바로 반영', 'menuClearPublicCache')
+    .addSeparator()
+    .addItem('시트 탭 만들기', 'setupSheets')
+    .addToUi()
+}
+
+function menuChangeAccessCode() {
+  const ui = SpreadsheetApp.getUi()
+  const response = ui.prompt(
+    '접속 코드 변경',
+    `새 접속 코드를 입력하세요 (${ACCESS_CODE_MIN_LENGTH}~${ACCESS_CODE_MAX_LENGTH}자). 원문은 저장되지 않습니다.`,
+    ui.ButtonSet.OK_CANCEL,
+  )
+  if (response.getSelectedButton() !== ui.Button.OK) return
+  const code = response.getResponseText().trim()
+  if (code.length < ACCESS_CODE_MIN_LENGTH || code.length > ACCESS_CODE_MAX_LENGTH) {
+    ui.alert(`접속 코드는 ${ACCESS_CODE_MIN_LENGTH}~${ACCESS_CODE_MAX_LENGTH}자로 입력하세요. 변경하지 않았습니다.`)
+    return
+  }
+  setAccessCode_(code)
+  ui.alert('변경했습니다. 기존 업로드 세션은 모두 종료되었습니다.')
+}
+
+function menuClearPublicCache() {
+  clearPublicCache()
+  SpreadsheetApp.getUi().alert('사이트에 바로 반영했습니다. 사이트를 새로고침하세요.')
+}
+
+// 처음 한 번 실행한다. 탭과 머리글, 기본 장르를 만든다. 이미 있는 내용은 지우지 않는다.
 function setupSheets() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet()
   Object.keys(SHEETS).forEach((name) => {
