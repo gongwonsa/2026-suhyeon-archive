@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import type { Work } from '../lib/api'
 import { GenreBadge } from './GenreBadge'
 import { WorkThumb } from './WorkThumb'
+import { WorkViewLink } from './WorkViewLink'
 
 interface WorkCardProps {
   work: Work
@@ -21,9 +22,7 @@ export function WorkCard({ work }: WorkCardProps) {
         <h2 className="work-title">{work.title}</h2>
         <div className="work-label-row">
           <span className="work-artist">{work.artist_name}</span>
-          <a href={work.link_url} target="_blank" rel="noopener noreferrer">
-            작품 보기 ↗
-          </a>
+          <WorkViewLink work={work} />
         </div>
       </div>
     </li>

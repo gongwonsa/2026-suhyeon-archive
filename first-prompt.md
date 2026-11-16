@@ -23,6 +23,7 @@
 │  ├─ pages/
 │  │  ├─ WorksPage.tsx             /works 공개 전시
 │  │  ├─ WorkDetailPage.tsx        /works/:id 상세
+│  │  ├─ WorkPlayPage.tsx          /works/:id/play HTML 작품 실행 (격리된 iframe)
 │  │  ├─ UploadPage.tsx            /upload 접속, 등록, 목록, 수정
 │  │  └─ PrivacyPage.tsx           /privacy 개인정보 처리방침
 │  ├─ components/
@@ -32,6 +33,10 @@
 │  │  ├─ SearchInput.tsx           제목·이름 검색
 │  │  ├─ WorkGrid.tsx              벽 배치 (CSS columns)
 │  │  ├─ WorkCard.tsx              썸네일 + 라벨 (No., 장르, 제목, 이름, 작품 보기)
+│  │  ├─ WorkThumb.tsx             썸네일 또는 기본 썸네일 + 제목
+│  │  ├─ GenreBadge.tsx            장르 배지
+│  │  ├─ WorkViewLink.tsx          작품 보기 링크 (외부 링크 또는 실행 페이지)
+│  │  ├─ UploadWorkList.tsx        업로드 화면의 전체 작품 목록
 │  │  ├─ WorkForm.tsx              등록·수정 공용 폼 (AI 사용 체크 포함)
 │  │  └─ ConsentBox.tsx            동의 항목과 전문 펼치기
 │  ├─ lib/
@@ -50,6 +55,7 @@
 ├─ .github/workflows/
 │  └─ deploy.yml                   main 푸시 시 GitHub Pages 배포
 ├─ .env.example                    키 이름만, 값은 비움
+├─ .env.sample                     npm run dev:sample 용 (웹 앱 없이 샘플로 전체 화면 확인)
 ├─ .gitignore                      .env, .env.local 제외
 ├─ CLAUDE.md
 ├─ DESIGN.md

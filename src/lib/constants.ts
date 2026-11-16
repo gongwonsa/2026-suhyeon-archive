@@ -8,6 +8,12 @@ export const FEEDBACK_FORM_URL = ''
 
 export const TEACHER_CONTACT_TEXT = '게시 중단이나 삭제를 원하면 지도교사에게 직접 연락해 주세요.'
 
+// 동의 문구를 바꾸면 버전도 바꾼다. 버전은 consents 탭에 함께 저장된다.
+export const CONSENT_VERSION = '2026-11-v1'
+
+export const HTML_MAX_BYTES = 5 * 1024 * 1024
+export const THUMB_MAX_WIDTH = 480
+
 export const SCHOOL_NAME = '수현중학교'
 
 export const SCHOOL_ADDRESS = '경기도 화성시 봉담읍 상리3길 136'

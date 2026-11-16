@@ -6,6 +6,7 @@ import { Header } from './components/Header'
 import { PrivacyPage } from './pages/PrivacyPage'
 import { UploadPage } from './pages/UploadPage'
 import { WorkDetailPage } from './pages/WorkDetailPage'
+import { WorkPlayPage } from './pages/WorkPlayPage'
 import { WorksPage } from './pages/WorksPage'
 import './styles/tokens.css'
 import './styles/fonts.css'
@@ -29,6 +30,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
   <StrictMode>
     <BrowserRouter basename={import.meta.env.BASE_URL}>
       <Routes>
+        <Route path="/works/:id/play" element={<WorkPlayPage />} />
         <Route element={<Layout />}>
           <Route path="/works" element={<WorksPage />} />
           <Route path="/works/:id" element={<WorkDetailPage />} />

@@ -12,13 +12,18 @@ export function Header() {
           <TitleTag className="page-title header-title">
             <Link to="/works">{SITE_TITLE}</Link>
           </TitleTag>
-          {FEEDBACK_FORM_URL ? (
-            <a className="header-link" href={FEEDBACK_FORM_URL} target="_blank" rel="noopener noreferrer">
-              후기 작성 ↗
-            </a>
-          ) : (
-            <span className="header-link header-link-disabled">후기 작성 ↗</span>
-          )}
+          <nav className="header-links" aria-label="바로가기">
+            <Link className="header-link" to="/upload">
+              작품 업로드
+            </Link>
+            {FEEDBACK_FORM_URL ? (
+              <a className="header-link" href={FEEDBACK_FORM_URL} target="_blank" rel="noopener noreferrer">
+                후기 작성 ↗
+              </a>
+            ) : (
+              <span className="header-link header-link-disabled">후기 작성 ↗</span>
+            )}
+          </nav>
         </div>
         {isWorksPage && <p className="header-intro">{INTRO_TEXT}</p>}
       </div>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import { GenreBadge } from '../components/GenreBadge'
 import { WorkThumb } from '../components/WorkThumb'
+import { WorkViewLink } from '../components/WorkViewLink'
 import { fetchPublicWork } from '../lib/api'
 import type { Work } from '../lib/api'
 
@@ -54,10 +55,8 @@ function WorkDetail({ work }: { work: Work }) {
         <h1 className="page-title detail-title">{work.title}</h1>
         <p className="detail-artist">{work.artist_name}</p>
         <p className="detail-description">{work.description}</p>
-        <a className="detail-link-button" href={work.link_url} target="_blank" rel="noopener noreferrer">
-          작품 보기 ↗
-        </a>
-        <p className="detail-link-note">외부 사이트로 이동합니다</p>
+        <WorkViewLink work={work} className="detail-link-button" />
+        <p className="detail-link-note">{work.work_type === 'html' ? '새 탭에서 작품이 바로 실행됩니다' : '외부 사이트로 이동합니다'}</p>
       </div>
     </div>
   )
