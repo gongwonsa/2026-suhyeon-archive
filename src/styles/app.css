@@ -94,16 +94,16 @@ a:hover {
 
 .header-brand {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-unit);
+  align-items: center;
+  gap: 12px;
   min-width: 0;
 }
 
 .header-logo {
   display: block;
+  flex: none;
   width: auto;
-  max-width: 160px;
+  max-width: 72px;
   height: 48px;
 }
 
@@ -111,6 +111,7 @@ a:hover {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex: none;
   width: 48px;
   height: 48px;
   border: 1px dashed var(--color-ink-muted);
@@ -127,9 +128,11 @@ a:hover {
   }
 
   .header-brand {
-    flex-direction: row;
-    align-items: center;
     gap: var(--space-card);
+  }
+
+  .header-logo {
+    max-width: 160px;
   }
 }
 
@@ -192,9 +195,16 @@ a:hover {
   color: var(--color-surface);
 }
 
-.header-link-disabled {
-  border-color: var(--color-rule);
-  color: var(--color-ink-muted);
+.header-link-primary {
+  padding-inline: 20px;
+  font-size: var(--text-work-title);
+}
+
+.header-link-pending,
+.header-link-pending:hover {
+  border-color: var(--color-accent);
+  background: var(--color-accent);
+  cursor: default;
 }
 
 .header-intro {

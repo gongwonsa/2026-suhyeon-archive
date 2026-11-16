@@ -32,12 +32,9 @@ export function Header() {
             </TitleTag>
           </div>
           <nav className="header-links" aria-label="바로가기">
-            <Link className="header-link header-link-primary" to="/upload">
-              작품 업로드
-            </Link>
             {FEEDBACK_FORM_URL ? (
               <a
-                className="header-link header-link-secondary"
+                className="header-link header-link-primary"
                 href={FEEDBACK_FORM_URL}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -45,8 +42,14 @@ export function Header() {
                 후기 작성 ↗
               </a>
             ) : (
-              <span className="header-link header-link-disabled">후기 작성 ↗</span>
+              // 폼 주소를 넣기 전에도 버튼 모양은 보이되, 누를 수 없음을 알린다.
+              <span className="header-link header-link-primary header-link-pending" aria-disabled="true" title="후기 폼을 준비하고 있습니다">
+                후기 작성 ↗
+              </span>
             )}
+            <Link className="header-link header-link-secondary" to="/upload">
+              작품 업로드
+            </Link>
           </nav>
         </div>
         {isWorksPage && <p className="header-intro">{INTRO_TEXT}</p>}
