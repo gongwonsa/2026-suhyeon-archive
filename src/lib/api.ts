@@ -80,3 +80,103 @@ export async function fetchPublicWork(id: number): Promise<Work | null> {
   const works = await fetchPublicWorks()
   return works.find((work) => work.id === id) ?? null
 }
+
+// --- 학생 업로드 ---
+
+export type LoginResult = 'ok' | 'invalid' | 'error'
+
+interface UploadSession {
+  token: string
+  expires_at: string
+}
+
+const SESSION_STORAGE_KEY = 'upload-session'
+const DEV_ACCESS_CODE = 'sample'
+const SESSION_MILLISECONDS = 3 * 60 * 60 * 1000
+
+// 쓰기 요청은 사전 요청(CORS preflight)이 생기지 않도록 text/plain 본문으로 보낸다.
+async function postAction(body: Record<string, unknown>): Promise<Record<string, unknown>> {
+  const response = await fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(body),
+  })
+  if (!response.ok) {
+    throw new Error('요청을 처리하지 못했습니다.')
+  }
+  const data: unknown = await response.json()
+  if (typeof data !== 'object' || data === null) {
+    throw new Error('응답 형식이 올바르지 않습니다.')
+  }
+  return data as Record<string, unknown>
+}
+
+function saveUploadSession(session: UploadSession): void {
+  try {
+    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session))
+  } catch {
+    // 저장소를 쓸 수 없는 브라우저에서는 이 화면을 벗어나면 다시 입장해야 한다.
+  }
+}
+
+export function getUploadSession(): UploadSession | null {
+  try {
+    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY)
+    if (!raw) return null
+    const session: unknown = JSON.parse(raw)
+    if (typeof session !== 'object' || session === null) return null
+    const { token, expires_at } = session as Record<string, unknown>
+    if (typeof token !== 'string' || typeof expires_at !== 'string') return null
+    if (Date.parse(expires_at) <= Date.now()) {
+      clearUploadSession()
+      return null
+    }
+    return { token, expires_at }
+  } catch {
+    return null
+  }
+}
+
+export function clearUploadSession(): void {
+  try {
+    sessionStorage.removeItem(SESSION_STORAGE_KEY)
+  } catch {
+    // 지울 저장소가 없으면 할 일도 없다.
+  }
+}
+
+// 접속 코드를 확인하고 세션을 저장한다. 웹 앱 주소가 없는 개발 환경에서는 'sample'만 통과한다.
+export async function login(code: string): Promise<LoginResult> {
+  try {
+    if (!APPS_SCRIPT_URL) {
+      if (import.meta.env.PROD) return 'error'
+      if (code.trim() !== DEV_ACCESS_CODE) return 'invalid'
+      saveUploadSession({ token: 'dev', expires_at: new Date(Date.now() + SESSION_MILLISECONDS).toISOString() })
+      return 'ok'
+    }
+    const data = await postAction({ action: 'login', code })
+    if (data.ok === true && typeof data.token === 'string' && typeof data.expires_at === 'string') {
+      saveUploadSession({ token: data.token, expires_at: data.expires_at })
+      return 'ok'
+    }
+    return data.error === 'invalid' ? 'invalid' : 'error'
+  } catch {
+    return 'error'
+  }
+}
+
+// 저장된 세션이 서버에서도 유효한지 확인한다. 접속 코드가 바뀌었으면 세션을 지운다.
+export async function verifyUploadSession(): Promise<boolean> {
+  const session = getUploadSession()
+  if (!session) return false
+  if (!APPS_SCRIPT_URL) return true
+  try {
+    const data = await postAction({ action: 'session', token: session.token })
+    if (data.ok === true) return true
+    clearUploadSession()
+    return false
+  } catch {
+    // 연결 문제일 수 있으므로 세션은 남겨 두고, 다음 요청에서 다시 확인한다.
+    return true
+  }
+}
