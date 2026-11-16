@@ -1,12 +1,13 @@
 import type { CSSProperties } from 'react'
-import { GENRES } from '../lib/constants'
+import type { Genre } from '../lib/constants'
 
 interface GenreBadgeProps {
   genreId: number
+  genres: Genre[]
 }
 
-export function GenreBadge({ genreId }: GenreBadgeProps) {
-  const genre = GENRES.find((item) => item.id === genreId)
+export function GenreBadge({ genreId, genres }: GenreBadgeProps) {
+  const genre = genres.find((item) => item.id === genreId)
   if (!genre) {
     return null
   }

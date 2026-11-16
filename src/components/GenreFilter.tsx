@@ -1,25 +1,26 @@
 import type { CSSProperties } from 'react'
-import { GENRES } from '../lib/constants'
+import type { Genre } from '../lib/constants'
 
 interface GenreFilterProps {
+  genres: Genre[]
   selectedId: number | null
   onSelect: (genreId: number | null) => void
 }
 
-const OPTIONS = [
-  { id: null, label: '전체', color: 'var(--color-accent)' },
-  ...GENRES.map((genre) => ({
-    id: genre.id,
-    label: genre.label,
-    color: `var(--genre-${genre.code}, var(--genre-etc))`,
-  })),
-]
+export function GenreFilter({ genres, selectedId, onSelect }: GenreFilterProps) {
+  const options = [
+    { id: null, label: '전체', color: 'var(--color-accent)' },
+    ...genres.map((genre) => ({
+      id: genre.id,
+      label: genre.label,
+      color: `var(--genre-${genre.code}, var(--genre-etc))`,
+    })),
+  ]
 
-export function GenreFilter({ selectedId, onSelect }: GenreFilterProps) {
   return (
     <ul className="genre-filter" aria-label="장르 필터">
-      {OPTIONS.map((option) => (
-        <li key={option.label}>
+      {options.map((option) => (
+        <li key={option.id ?? 'all'}>
           <button
             type="button"
             className="genre-filter-button"

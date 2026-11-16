@@ -2,17 +2,21 @@ import { useEffect, useMemo, useState } from 'react'
 import { GenreFilter } from '../components/GenreFilter'
 import { SearchInput } from '../components/SearchInput'
 import { WorkGrid } from '../components/WorkGrid'
-import { fetchPublicWorks } from '../lib/api'
+import { fetchGenres, fetchPublicWorks } from '../lib/api'
 import type { Work } from '../lib/api'
+import { GENRES } from '../lib/constants'
+import type { Genre } from '../lib/constants'
 
 export function WorksPage() {
   const [works, setWorks] = useState<Work[] | null>(null)
+  const [genres, setGenres] = useState<Genre[]>(GENRES)
   const [loadFailed, setLoadFailed] = useState(false)
   const [genreId, setGenreId] = useState<number | null>(null)
   const [query, setQuery] = useState('')
 
   useEffect(() => {
     fetchPublicWorks().then(setWorks, () => setLoadFailed(true))
+    fetchGenres().then(setGenres)
   }, [])
 
   const visibleWorks = useMemo(() => {
@@ -28,11 +32,11 @@ export function WorksPage() {
   return (
     <>
       <div className="controls">
-        <GenreFilter selectedId={genreId} onSelect={setGenreId} />
+        <GenreFilter genres={genres} selectedId={genreId} onSelect={setGenreId} />
         <SearchInput value={query} onChange={setQuery} />
       </div>
       {loadFailed && <p className="empty-text">잠시 후 다시 시도해 주세요.</p>}
-      {works && visibleWorks.length > 0 && <WorkGrid works={visibleWorks} />}
+      {works && visibleWorks.length > 0 && <WorkGrid works={visibleWorks} genres={genres} />}
       <p className="empty-text" aria-live="polite">
         {works && visibleWorks.length === 0 ? '해당하는 작품이 없습니다.' : ''}
       </p>
