@@ -62,8 +62,9 @@
 
 ## 5. 데이터 모델 (스프레드시트 탭)
 
-- `works`: id, work_no(등록 순서대로 한 번 부여하는 고정 전시 번호, 재사용·변경 없음), title, artist_name, genre_id, description, link_url, is_ai, thumb, status(`대기`/`공개`/`숨김`/`삭제요청`), created_at, updated_at
-- `work_edits`: id, work_id, edited_at, before_json, after_json (사이트에 노출 금지, 교사가 시트에서만 확인)
+- `works`: id, work_no(등록 순서대로 한 번 부여하는 고정 전시 번호, 재사용·변경 없음), title, artist_name, genre_id, description, link_url, is_ai, thumb, status(`대기`/`공개`/`숨김`/`삭제요청`), created_at, updated_at, work_type(`link`/`html`), html_ref(HTML 작품의 `html_files` 위치 "시작행:행수")
+- `html_files`: work_id, part, content (숨김 탭. HTML 본문을 4만5천 자씩 나눠 저장. 교사가 직접 고치지 않음)
+- `work_edits`: id, work_id, edited_at, before_json, after_json (사이트에 노출 금지, 교사가 시트에서만 확인. 썸네일과 HTML 본문은 바뀌었는지만 기록)
 - `consents`: id, work_id, consent_version, agreed_at, agreed_public
 - `genres`: id, code, label, sort_order
 - 접속 코드 해시와 변경 시각은 시트가 아니라 Apps Script의 스크립트 속성(Script Properties)에 둡니다.
@@ -78,7 +79,8 @@
 - 스프레드시트는 공유하지 않으며 "웹에 게시"도 하지 않습니다. 브라우저는 시트에 직접 접근하지 않고 웹 앱 API만 거칩니다.
 - 공개 API는 `status = 공개`인 작품의 공개 필드만 돌려줍니다. `work_edits`, `consents`, 스크립트 속성은 어떤 API로도 돌려주지 않습니다.
 - 접속 코드 검사, 업로드, 수정, 삭제 요청은 Apps Script에서만 처리합니다. 쓰기 요청마다 세션 토큰을 검사합니다.
-- 시트에 쓰는 작업은 `LockService`로 잠급니다.
+- 시트에 쓰는 작업은 `LockService`로 잠급니다. 학생 입력은 텍스트 서식으로 써서 `=`로 시작해도 수식이 되지 않게 합니다.
+- 작품 id와 전시 번호의 다음 값은 스크립트 속성에 두어, 교사가 행을 지워도 다시 쓰이지 않게 합니다.
 - 접속 코드 입력 실패는 횟수 제한을 둡니다. Apps Script는 방문자 IP를 알 수 없으므로 전체 기준으로 제한합니다 (10분에 20회 실패하면 10분간 거부). 실패 메시지는 "코드가 올바르지 않습니다." 하나로 통일합니다.
 - 접속 코드는 URL 쿼리에 넣지 않습니다. 입력 폼으로만 받고 POST 본문으로 보냅니다.
 - 에러 응답에 내부 정보, 스크립트 오류, 시트 이름을 노출하지 않습니다.
