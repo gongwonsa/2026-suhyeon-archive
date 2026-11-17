@@ -519,14 +519,14 @@ function bebrasLookup_(request) {
   return { ok: true, id: account.id, password: account.password }
 }
 
-// bebras 탭에서 학번으로 찾는다. 첫 행에 학번·아이디·비밀번호 머리글이 있으면 그 열을 쓰고, 없으면 A·B·C열로 본다.
+// bebras 탭에서 학번으로 찾는다. 첫 행에 num·id·pw(또는 학번·아이디·비밀번호) 머리글이 있으면 그 열을 쓰고, 없으면 A·B·C열로 본다.
 function findBebrasAccount_(studentNo) {
   const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('bebras')
   if (!sheet || sheet.getLastRow() === 0) return null
   const values = sheet.getDataRange().getValues()
   const headers = values[0].map((cell) => String(cell).trim())
   const find = (pattern) => headers.findIndex((header) => pattern.test(header))
-  let columns = { no: find(/학번|student/i), id: find(/아이디|^id$|login/i), password: find(/비밀번호|비번|password|^pw$/i) }
+  let columns = { no: find(/학번|student|^num(ber)?$|^no$/i), id: find(/아이디|^id$|login/i), password: find(/비밀번호|비번|password|^pw$/i) }
   let rows = values.slice(1)
   if (columns.no === -1 || columns.id === -1 || columns.password === -1) {
     columns = { no: 0, id: 1, password: 2 }

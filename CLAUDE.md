@@ -73,7 +73,7 @@
 - `work_edits`: id, work_id, edited_at, before_json, after_json (사이트에 노출 금지, 교사가 시트에서만 확인. 썸네일과 HTML 본문은 바뀌었는지만 기록)
 - `consents`: id, work_id, consent_version, agreed_at, agreed_public
 - `genres`: id, code, label, sort_order
-- `bebras`: 학번, 아이디, 비밀번호 (교사가 직접 입력. 첫 행에 이 머리글이 없으면 A·B·C열로 읽음. 공개 API로 내보내지 않음)
+- `bebras`: num(학번), id(아이디), pw(비밀번호) (교사가 직접 입력. 첫 행에 이 머리글이 없으면 A·B·C열로 읽음. 공개 API로 내보내지 않음)
 - 접속 코드와 비버챌린지 조회 코드의 해시와 변경 시각은 시트가 아니라 Apps Script의 스크립트 속성(Script Properties)에 둡니다.
 
 ## 6. 보안 원칙 (필수)
