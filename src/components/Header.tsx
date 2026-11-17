@@ -50,6 +50,9 @@ export function Header() {
             <Link className="header-link header-link-secondary" to="/upload">
               작품 업로드
             </Link>
+            <Link className="header-link header-link-outline" to="/bebras">
+              비버챌린지 아이디 조회
+            </Link>
           </nav>
         </div>
         {isWorksPage && <p className="header-intro">{INTRO_TEXT}</p>}

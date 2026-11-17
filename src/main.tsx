@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
+import { BebrasPage } from './pages/BebrasPage'
 import { PrivacyPage } from './pages/PrivacyPage'
 import { UploadPage } from './pages/UploadPage'
 import { WorkDetailPage } from './pages/WorkDetailPage'
@@ -35,6 +36,7 @@ createRoot(document.getElementById('root') as HTMLElement).render(
           <Route path="/works" element={<WorksPage />} />
           <Route path="/works/:id" element={<WorkDetailPage />} />
           <Route path="/upload" element={<UploadPage />} />
+          <Route path="/bebras" element={<BebrasPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="*" element={<Navigate to="/works" replace />} />
         </Route>

@@ -25,6 +25,7 @@
 │  │  ├─ WorkDetailPage.tsx        /works/:id 상세
 │  │  ├─ WorkPlayPage.tsx          /works/:id/play HTML 작품 실행 (격리된 iframe)
 │  │  ├─ UploadPage.tsx            /upload 접속, 등록, 목록, 수정
+│  │  ├─ BebrasPage.tsx            /bebras 비버챌린지 아이디 조회
 │  │  └─ PrivacyPage.tsx           /privacy 개인정보 처리방침
 │  ├─ components/
 │  │  ├─ Header.tsx                제목, 소개 문구, 후기 작성 링크
@@ -37,6 +38,7 @@
 │  │  ├─ GenreBadge.tsx            장르 배지
 │  │  ├─ WorkViewLink.tsx          작품 보기 링크 (외부 링크 또는 실행 페이지)
 │  │  ├─ UploadWorkList.tsx        업로드 화면의 전체 작품 목록
+│  │  ├─ CodeForm.tsx              코드 입력 화면 (업로드, 비버챌린지 공용)
 │  │  ├─ WorkForm.tsx              등록·수정 공용 폼 (AI 사용 체크 포함)
 │  │  └─ ConsentBox.tsx            동의 항목과 전문 펼치기
 │  ├─ lib/

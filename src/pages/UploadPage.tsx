@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import type { FormEvent } from 'react'
+import { CodeForm } from '../components/CodeForm'
 import { UploadWorkList } from '../components/UploadWorkList'
 import { WorkForm } from '../components/WorkForm'
 import {
@@ -45,8 +45,12 @@ export function UploadPage() {
   if (view === 'checking') return null
   if (view === 'access') {
     return (
-      <AccessForm
+      <CodeForm
+        title="작품 업로드"
+        help="수업 시간에 안내받은 접속 코드를 입력하세요."
+        label="접속 코드"
         notice={notice}
+        onSubmitCode={login}
         onEnter={() => {
           setNotice('')
           setView('entered')
@@ -172,56 +176,5 @@ function UploadWorkspace({ onExit, onSessionEnded }: { onExit: () => void; onSes
         )}
       </section>
     </div>
-  )
-}
-
-function AccessForm({ notice, onEnter }: { notice: string; onEnter: () => void }) {
-  const [code, setCode] = useState('')
-  const [pending, setPending] = useState(false)
-  const [error, setError] = useState('')
-
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    if (pending || !code.trim()) return
-    setPending(true)
-    setError('')
-    const result = await login(code)
-    setPending(false)
-    if (result === 'ok') {
-      onEnter()
-      return
-    }
-    setError(result === 'invalid' ? '코드가 올바르지 않습니다.' : '잠시 후 다시 시도해 주세요.')
-  }
-
-  return (
-    <form className="upload-access" onSubmit={handleSubmit}>
-      <h1 className="page-title">작품 업로드</h1>
-      <p className="form-help">수업 시간에 안내받은 접속 코드를 입력하세요.</p>
-      {notice && <p className="form-warning">{notice}</p>}
-      <label className="form-label" htmlFor="access-code">
-        접속 코드
-      </label>
-      <input
-        id="access-code"
-        className="text-input"
-        type="text"
-        autoComplete="off"
-        autoCapitalize="off"
-        spellCheck={false}
-        value={code}
-        aria-invalid={error ? true : undefined}
-        aria-describedby={error ? 'access-error' : undefined}
-        onChange={(event) => setCode(event.target.value)}
-      />
-      {error && (
-        <p id="access-error" className="form-error" role="alert">
-          {error}
-        </p>
-      )}
-      <button type="submit" className="text-button upload-access-submit" disabled={pending || !code.trim()}>
-        {pending ? '확인 중' : '입장'}
-      </button>
-    </form>
   )
 }

@@ -41,6 +41,9 @@ export interface WorkInput {
 
 export type WriteResult = { ok: true } | { ok: false; reason: 'session' | 'invalid' | 'error' }
 export type LoginResult = 'ok' | 'invalid' | 'error'
+export type BebrasLookupResult =
+  | { ok: true; id: string; password: string }
+  | { ok: false; reason: 'notfound' | 'limit' | 'invalid' | 'session' | 'error' }
 
 interface PublicData {
   works: Work[]
@@ -60,7 +63,9 @@ const APPS_SCRIPT_URL = import.meta.env.VITE_APPS_SCRIPT_URL ?? ''
 // 웹 앱 주소가 없는 개발 환경에서는 메모리 안의 샘플로 모든 화면을 확인한다. 새로고침하면 처음 상태로 돌아간다.
 const SAMPLE_MODE = !APPS_SCRIPT_URL && import.meta.env.DEV
 
-const SESSION_STORAGE_KEY = 'upload-session'
+const UPLOAD_SESSION_KEY = 'upload-session'
+const BEBRAS_SESSION_KEY = 'bebras-session'
+const BEBRAS_SESSION_MILLISECONDS = 30 * 60 * 1000
 const SAMPLE_ACCESS_CODE = 'sample'
 const SESSION_MILLISECONDS = 3 * 60 * 60 * 1000
 const HTTP_URL_PATTERN = /^https?:\/\//i
@@ -223,24 +228,24 @@ export async function fetchWorkHtml(id: number): Promise<string | null> {
 
 // --- 학생 업로드 ---
 
-function saveUploadSession(session: UploadSession): void {
+function saveSession(key: string, session: UploadSession): void {
   try {
-    sessionStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session))
+    sessionStorage.setItem(key, JSON.stringify(session))
   } catch {
     // 저장소를 쓸 수 없는 브라우저에서는 이 화면을 벗어나면 다시 입장해야 한다.
   }
 }
 
-export function getUploadSession(): UploadSession | null {
+function readSession(key: string): UploadSession | null {
   try {
-    const raw = sessionStorage.getItem(SESSION_STORAGE_KEY)
+    const raw = sessionStorage.getItem(key)
     if (!raw) return null
     const session: unknown = JSON.parse(raw)
     if (typeof session !== 'object' || session === null) return null
     const { token, expires_at } = session as Record<string, unknown>
     if (typeof token !== 'string' || typeof expires_at !== 'string') return null
     if (Date.parse(expires_at) <= Date.now()) {
-      clearUploadSession()
+      clearSession(key)
       return null
     }
     return { token, expires_at }
@@ -249,12 +254,24 @@ export function getUploadSession(): UploadSession | null {
   }
 }
 
-export function clearUploadSession(): void {
+function clearSession(key: string): void {
   try {
-    sessionStorage.removeItem(SESSION_STORAGE_KEY)
+    sessionStorage.removeItem(key)
   } catch {
     // 지울 저장소가 없으면 할 일도 없다.
   }
+}
+
+function saveUploadSession(session: UploadSession): void {
+  saveSession(UPLOAD_SESSION_KEY, session)
+}
+
+export function getUploadSession(): UploadSession | null {
+  return readSession(UPLOAD_SESSION_KEY)
+}
+
+export function clearUploadSession(): void {
+  clearSession(UPLOAD_SESSION_KEY)
 }
 
 // 접속 코드를 확인하고 세션을 저장한다. 샘플 모드에서는 'sample'만 통과한다.
@@ -392,4 +409,61 @@ export async function requestDelete(id: number): Promise<WriteResult> {
     return { ok: true }
   }
   return writeAction({ action: 'requestDelete', id })
+}
+
+// --- 비버챌린지 아이디 조회 ---
+
+export function hasBebrasSession(): boolean {
+  return readSession(BEBRAS_SESSION_KEY) !== null
+}
+
+export function clearBebrasSession(): void {
+  clearSession(BEBRAS_SESSION_KEY)
+}
+
+// 조회 코드를 확인하고 세션을 저장한다. 샘플 모드에서는 'sample'만 통과한다.
+export async function enterBebras(code: string): Promise<LoginResult> {
+  try {
+    if (SAMPLE_MODE) {
+      if (code.trim() !== SAMPLE_ACCESS_CODE) return 'invalid'
+      saveSession(BEBRAS_SESSION_KEY, { token: 'sample', expires_at: new Date(Date.now() + BEBRAS_SESSION_MILLISECONDS).toISOString() })
+      return 'ok'
+    }
+    if (!APPS_SCRIPT_URL) return 'error'
+    const data = await postAction({ action: 'bebrasLogin', code })
+    if (data.ok === true && typeof data.token === 'string' && typeof data.expires_at === 'string') {
+      saveSession(BEBRAS_SESSION_KEY, { token: data.token, expires_at: data.expires_at })
+      return 'ok'
+    }
+    return data.error === 'invalid' ? 'invalid' : 'error'
+  } catch {
+    return 'error'
+  }
+}
+
+// 학번 하나의 비버챌린지 아이디와 비밀번호. 샘플 모드에서는 12345만 찾을 수 있다.
+export async function lookupBebras(studentNo: string): Promise<BebrasLookupResult> {
+  if (SAMPLE_MODE) {
+    return studentNo === '12345'
+      ? { ok: true, id: 'sample_bebras', password: 'sample-pw' }
+      : { ok: false, reason: 'notfound' }
+  }
+  const session = readSession(BEBRAS_SESSION_KEY)
+  if (!session) return { ok: false, reason: 'session' }
+  try {
+    const data = await postAction({ action: 'bebrasLookup', token: session.token, student_no: studentNo })
+    if (data.ok === true && typeof data.id === 'string' && typeof data.password === 'string') {
+      return { ok: true, id: data.id, password: data.password }
+    }
+    if (data.error === 'session') {
+      clearSession(BEBRAS_SESSION_KEY)
+      return { ok: false, reason: 'session' }
+    }
+    if (data.error === 'notfound' || data.error === 'limit' || data.error === 'invalid') {
+      return { ok: false, reason: data.error }
+    }
+    return { ok: false, reason: 'error' }
+  } catch {
+    return { ok: false, reason: 'error' }
+  }
 }
