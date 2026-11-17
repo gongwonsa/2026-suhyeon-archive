@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { FeedbackEventBanner } from '../components/FeedbackEvent'
 import { GenreFilter } from '../components/GenreFilter'
 import { SearchInput } from '../components/SearchInput'
 import { WorkGrid } from '../components/WorkGrid'
@@ -31,6 +32,7 @@ export function WorksPage() {
 
   return (
     <>
+      <FeedbackEventBanner />
       <div className="controls">
         <GenreFilter genres={genres} selectedId={genreId} onSelect={setGenreId} />
         <SearchInput value={query} onChange={setQuery} />

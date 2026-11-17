@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link, useMatch } from 'react-router-dom'
-import { FEEDBACK_FORM_URL, INTRO_TEXT, SITE_TITLE } from '../lib/constants'
+import { INTRO_TEXT, SITE_TITLE } from '../lib/constants'
+import { FeedbackLink } from './FeedbackEvent'
 
 const LOGO_URL = `${import.meta.env.BASE_URL}logo.png`
 
@@ -32,21 +33,7 @@ export function Header() {
             </TitleTag>
           </div>
           <nav className="header-links" aria-label="바로가기">
-            {FEEDBACK_FORM_URL ? (
-              <a
-                className="header-link header-link-primary"
-                href={FEEDBACK_FORM_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                후기 작성 ↗
-              </a>
-            ) : (
-              // 폼 주소를 넣기 전에도 버튼 모양은 보이되, 누를 수 없음을 알린다.
-              <span className="header-link header-link-primary header-link-pending" aria-disabled="true" title="후기 폼을 준비하고 있습니다">
-                후기 작성 ↗
-              </span>
-            )}
+            <FeedbackLink className="header-link header-link-primary" />
             <Link className="header-link header-link-secondary" to="/upload">
               작품 업로드
             </Link>

@@ -39,6 +39,7 @@
 │  │  ├─ WorkViewLink.tsx          작품 보기 링크 (외부 링크 또는 실행 페이지)
 │  │  ├─ UploadWorkList.tsx        업로드 화면의 전체 작품 목록
 │  │  ├─ CodeForm.tsx              코드 입력 화면 (업로드, 비버챌린지 공용)
+│  │  ├─ FeedbackEvent.tsx         후기 이벤트 버튼과 안내 상자
 │  │  ├─ WorkForm.tsx              등록·수정 공용 폼 (AI 사용 체크 포함)
 │  │  └─ ConsentBox.tsx            동의 항목과 전문 펼치기
 │  ├─ lib/
