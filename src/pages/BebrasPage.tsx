@@ -1,7 +1,48 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { CodeForm } from '../components/CodeForm'
 import { clearBebrasSession, enterBebras, hasBebrasSession, lookupBebras } from '../lib/api'
+import { BEBRAS_SITE_URL } from '../lib/constants'
+
+// 클립보드 API를 쓸 수 없는 브라우저(일부 학교 PC, http 접속)에서는 예전 방식으로 복사한다.
+async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text)
+    return true
+  } catch {
+    const area = document.createElement('textarea')
+    area.value = text
+    area.setAttribute('readonly', '')
+    area.style.position = 'fixed'
+    area.style.opacity = '0'
+    document.body.appendChild(area)
+    area.select()
+    const copied = document.execCommand('copy')
+    area.remove()
+    return copied
+  }
+}
+
+function CopyButton({ text, label }: { text: string; label: string }) {
+  const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle')
+
+  useEffect(() => {
+    if (state === 'idle') return
+    const timer = window.setTimeout(() => setState('idle'), 2000)
+    return () => window.clearTimeout(timer)
+  }, [state])
+
+  return (
+    <button
+      type="button"
+      className="copy-button"
+      aria-label={`${label} 복사`}
+      onClick={async () => setState((await copyText(text)) ? 'copied' : 'failed')}
+    >
+      {state === 'copied' ? '복사됨' : state === 'failed' ? '직접 복사하세요' : '복사'}
+    </button>
+  )
+}
 
 const TITLE = '비버챌린지 아이디 조회'
 const STUDENT_NO_PATTERN = /^\d{5}$/
@@ -116,10 +157,17 @@ function BebrasLookup({ onExit }: { onExit: (message: string) => void }) {
             <dl className="bebras-result">
               <dt>아이디</dt>
               <dd>{account.id}</dd>
+              <CopyButton text={account.id} label="아이디" />
               <dt>비밀번호</dt>
               <dd>{account.password}</dd>
+              <CopyButton text={account.password} label="비밀번호" />
             </dl>
             <p className="form-help">비밀번호는 다른 사람에게 보여 주지 마세요. 확인이 끝나면 나가기를 누르세요.</p>
+            <div className="form-actions">
+              <a className="primary-button bebras-site-link" href={BEBRAS_SITE_URL} target="_blank" rel="noopener noreferrer">
+                비버챌린지 사이트 바로가기 ↗
+              </a>
+            </div>
           </>
         )}
       </div>
