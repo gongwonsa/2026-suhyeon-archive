@@ -30,13 +30,39 @@ const HTML_CHUNK_CHARS = 45000
 const HTML_REF_PATTERN = /^(\d+):(\d+)$/
 const STATUSES = ['대기', '공개', '숨김', '삭제요청']
 
-const LOGIN_FAIL_KEY = 'login-failures'
 const LOGIN_FAIL_LIMIT = 20
 const LOGIN_FAIL_WINDOW_SECONDS = 600
 const SESSION_SECONDS = 3 * 60 * 60
 const SESSION_TOKEN_PATTERN = /^[0-9a-f]{64}$/
 const ACCESS_CODE_MIN_LENGTH = 4
 const ACCESS_CODE_MAX_LENGTH = 50
+const BEBRAS_SESSION_SECONDS = 30 * 60
+const BEBRAS_LOOKUP_LIMIT = 10
+const STUDENT_NO_PATTERN = /^\d{5}$/
+
+// 코드 종류별 저장 위치. upload는 작품 업로드, bebras는 비버챌린지 아이디 조회.
+const CODE_KINDS = {
+  upload: {
+    title: '접속 코드',
+    hash: 'ACCESS_CODE_HASH',
+    salt: 'ACCESS_CODE_SALT',
+    changedAt: 'ACCESS_CODE_CHANGED_AT',
+    version: 'SESSION_VERSION',
+    failKey: 'login-failures',
+    sessionPrefix: 'session:',
+    seconds: SESSION_SECONDS,
+  },
+  bebras: {
+    title: '비버챌린지 조회 코드',
+    hash: 'BEBRAS_CODE_HASH',
+    salt: 'BEBRAS_CODE_SALT',
+    changedAt: 'BEBRAS_CODE_CHANGED_AT',
+    version: 'BEBRAS_SESSION_VERSION',
+    failKey: 'bebras-failures',
+    sessionPrefix: 'bebras-session:',
+    seconds: BEBRAS_SESSION_SECONDS,
+  },
+}
 
 // 세션 토큰이 있어야 하는 요청
 const SESSION_ACTIONS = {
@@ -70,10 +96,12 @@ function doPost(e) {
     return json_({ ok: false })
   }
   try {
-    if (request.action === 'login') return json_(login_(request.code))
-    if (request.action === 'session') return json_({ ok: isValidSession_(request.token) })
+    if (request.action === 'login') return json_(login_(request.code, 'upload'))
+    if (request.action === 'session') return json_({ ok: isValidSession_(request.token, 'upload') })
+    if (request.action === 'bebrasLogin') return json_(login_(request.code, 'bebras'))
+    if (request.action === 'bebrasLookup') return json_(bebrasLookup_(request))
     if (typeof request.action === 'string' && Object.prototype.hasOwnProperty.call(SESSION_ACTIONS, request.action)) {
-      if (!isValidSession_(request.token)) return json_({ ok: false, error: 'session' })
+      if (!isValidSession_(request.token, 'upload')) return json_({ ok: false, error: 'session' })
       return json_(SESSION_ACTIONS[request.action](request))
     }
     return json_({ ok: false })
@@ -85,18 +113,19 @@ function doPost(e) {
 
 // --- 접속 코드와 세션 ---
 
-// 접속 코드를 확인하고 세션 토큰을 발급한다. 실패 사유와 상관없이 같은 오류를 돌려준다.
-function login_(code) {
+// 코드를 확인하고 세션 토큰을 발급한다. 실패 사유와 상관없이 같은 오류를 돌려준다.
+function login_(code, kind) {
+  const config = CODE_KINDS[kind]
   const cache = CacheService.getScriptCache()
   const lock = LockService.getScriptLock()
   lock.waitLock(5000)
   try {
-    const failures = Number(cache.get(LOGIN_FAIL_KEY)) || 0
+    const failures = Number(cache.get(config.failKey)) || 0
     if (failures >= LOGIN_FAIL_LIMIT) {
       return { ok: false, error: 'invalid' }
     }
-    if (!isAccessCode_(code)) {
-      cache.put(LOGIN_FAIL_KEY, String(failures + 1), LOGIN_FAIL_WINDOW_SECONDS)
+    if (!isCode_(code, kind)) {
+      cache.put(config.failKey, String(failures + 1), LOGIN_FAIL_WINDOW_SECONDS)
       return { ok: false, error: 'invalid' }
     }
   } finally {
@@ -104,25 +133,27 @@ function login_(code) {
   }
 
   const token = (Utilities.getUuid() + Utilities.getUuid()).replace(/-/g, '')
-  const version = PropertiesService.getScriptProperties().getProperty('SESSION_VERSION')
-  cache.put('session:' + token, version, SESSION_SECONDS)
-  return { ok: true, token: token, expires_at: new Date(Date.now() + SESSION_SECONDS * 1000).toISOString() }
+  const version = PropertiesService.getScriptProperties().getProperty(config.version)
+  cache.put(config.sessionPrefix + token, version, config.seconds)
+  return { ok: true, token: token, expires_at: new Date(Date.now() + config.seconds * 1000).toISOString() }
 }
 
-function isAccessCode_(code) {
+function isCode_(code, kind) {
   if (typeof code !== 'string') return false
+  const config = CODE_KINDS[kind]
   const properties = PropertiesService.getScriptProperties()
-  const hash = properties.getProperty('ACCESS_CODE_HASH')
-  const salt = properties.getProperty('ACCESS_CODE_SALT')
+  const hash = properties.getProperty(config.hash)
+  const salt = properties.getProperty(config.salt)
   if (!hash || !salt) return false
   return hashAccessCode_(salt, code.trim()) === hash
 }
 
-// 접속 코드를 바꾸면 세션 버전도 바뀌어 기존 세션이 모두 무효가 된다.
-function isValidSession_(token) {
+// 코드를 바꾸면 세션 버전도 바뀌어 기존 세션이 모두 무효가 된다.
+function isValidSession_(token, kind) {
   if (typeof token !== 'string' || !SESSION_TOKEN_PATTERN.test(token)) return false
-  const version = CacheService.getScriptCache().get('session:' + token)
-  return version !== null && version === PropertiesService.getScriptProperties().getProperty('SESSION_VERSION')
+  const config = CODE_KINDS[kind]
+  const version = CacheService.getScriptCache().get(config.sessionPrefix + token)
+  return version !== null && version === PropertiesService.getScriptProperties().getProperty(config.version)
 }
 
 function hashAccessCode_(salt, code) {
@@ -130,14 +161,19 @@ function hashAccessCode_(salt, code) {
   return Utilities.base64Encode(bytes)
 }
 
-function setAccessCode_(code) {
+function setCode_(kind, code) {
+  const config = CODE_KINDS[kind]
   const salt = Utilities.getUuid()
-  PropertiesService.getScriptProperties().setProperties({
-    ACCESS_CODE_SALT: salt,
-    ACCESS_CODE_HASH: hashAccessCode_(salt, code),
-    ACCESS_CODE_CHANGED_AT: new Date().toISOString(),
-    SESSION_VERSION: Utilities.getUuid(),
-  })
+  const values = {}
+  values[config.salt] = salt
+  values[config.hash] = hashAccessCode_(salt, code)
+  values[config.changedAt] = new Date().toISOString()
+  values[config.version] = Utilities.getUuid()
+  PropertiesService.getScriptProperties().setProperties(values)
+}
+
+function setAccessCode_(code) {
+  setCode_('upload', code)
 }
 
 // --- 공개 조회 ---
@@ -464,6 +500,51 @@ function clearHtml_(ref) {
   table.sheet.getRange(firstRow, 1, count, 3).clearContent()
 }
 
+// --- 비버챌린지 아이디 조회 ---
+
+// 학번 하나의 비버챌린지 아이디와 비밀번호를 돌려준다. 한 번 입장해서 조회할 수 있는 횟수를 제한한다.
+function bebrasLookup_(request) {
+  if (!isValidSession_(request.token, 'bebras')) return { ok: false, error: 'session' }
+  const studentNo = typeof request.student_no === 'string' ? request.student_no.trim() : ''
+  if (!STUDENT_NO_PATTERN.test(studentNo)) return { ok: false, error: 'invalid' }
+
+  const cache = CacheService.getScriptCache()
+  const countKey = 'bebras-count:' + request.token
+  const count = Number(cache.get(countKey)) || 0
+  if (count >= BEBRAS_LOOKUP_LIMIT) return { ok: false, error: 'limit' }
+  cache.put(countKey, String(count + 1), BEBRAS_SESSION_SECONDS)
+
+  const account = findBebrasAccount_(studentNo)
+  if (!account) return { ok: false, error: 'notfound' }
+  return { ok: true, id: account.id, password: account.password }
+}
+
+// bebras 탭에서 학번으로 찾는다. 첫 행에 학번·아이디·비밀번호 머리글이 있으면 그 열을 쓰고, 없으면 A·B·C열로 본다.
+function findBebrasAccount_(studentNo) {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('bebras')
+  if (!sheet || sheet.getLastRow() === 0) return null
+  const values = sheet.getDataRange().getValues()
+  const headers = values[0].map((cell) => String(cell).trim())
+  const find = (pattern) => headers.findIndex((header) => pattern.test(header))
+  let columns = { no: find(/학번|student/i), id: find(/아이디|^id$|login/i), password: find(/비밀번호|비번|password|^pw$/i) }
+  let rows = values.slice(1)
+  if (columns.no === -1 || columns.id === -1 || columns.password === -1) {
+    columns = { no: 0, id: 1, password: 2 }
+    rows = values
+  }
+  const row = rows.find((cells) => normalizeStudentNo_(cells[columns.no]) === studentNo)
+  if (!row) return null
+  const id = String(row[columns.id]).trim()
+  const password = String(row[columns.password]).trim()
+  if (!id || !password) return null
+  return { id: id, password: password }
+}
+
+function normalizeStudentNo_(value) {
+  const text = String(value).trim()
+  return /^\d+(\.0+)?$/.test(text) ? String(Math.trunc(Number(text))) : text
+}
+
 // --- 시트 읽기와 쓰기 ---
 
 // 탭을 열고 빠진 머리글을 끝에 추가한다. 이미 쓰던 시트에 새 열이 생겨도 기존 데이터는 그대로 둔다.
@@ -574,6 +655,7 @@ function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('전시 관리')
     .addItem('접속 코드 변경', 'menuChangeAccessCode')
+    .addItem('비버챌린지 조회 코드 변경', 'menuChangeBebrasCode')
     .addItem('사이트에 바로 반영', 'menuClearPublicCache')
     .addSeparator()
     .addItem('시트 탭 만들기', 'setupSheets')
@@ -581,20 +663,29 @@ function onOpen() {
 }
 
 function menuChangeAccessCode() {
+  promptCode_('upload', '기존 업로드 세션은 모두 종료되었습니다.')
+}
+
+function menuChangeBebrasCode() {
+  promptCode_('bebras', '이미 조회 화면에 들어온 학생은 다시 코드를 입력해야 합니다.')
+}
+
+function promptCode_(kind, endedMessage) {
+  const title = CODE_KINDS[kind].title
   const ui = SpreadsheetApp.getUi()
   const response = ui.prompt(
-    '접속 코드 변경',
-    `새 접속 코드를 입력하세요 (${ACCESS_CODE_MIN_LENGTH}~${ACCESS_CODE_MAX_LENGTH}자). 원문은 저장되지 않습니다.`,
+    title + ' 변경',
+    `새 ${title}를 입력하세요 (${ACCESS_CODE_MIN_LENGTH}~${ACCESS_CODE_MAX_LENGTH}자). 원문은 저장되지 않습니다.`,
     ui.ButtonSet.OK_CANCEL,
   )
   if (response.getSelectedButton() !== ui.Button.OK) return
   const code = response.getResponseText().trim()
   if (code.length < ACCESS_CODE_MIN_LENGTH || code.length > ACCESS_CODE_MAX_LENGTH) {
-    ui.alert(`접속 코드는 ${ACCESS_CODE_MIN_LENGTH}~${ACCESS_CODE_MAX_LENGTH}자로 입력하세요. 변경하지 않았습니다.`)
+    ui.alert(`${title}는 ${ACCESS_CODE_MIN_LENGTH}~${ACCESS_CODE_MAX_LENGTH}자로 입력하세요. 변경하지 않았습니다.`)
     return
   }
-  setAccessCode_(code)
-  ui.alert('변경했습니다. 기존 업로드 세션은 모두 종료되었습니다.')
+  setCode_(kind, code)
+  ui.alert('변경했습니다. ' + endedMessage)
 }
 
 function menuClearPublicCache() {
