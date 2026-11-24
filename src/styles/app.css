@@ -103,8 +103,7 @@ a:hover {
   display: block;
   flex: none;
   width: auto;
-  max-width: 72px;
-  height: 48px;
+  height: 72px;
 }
 
 .header-logo-placeholder {
@@ -113,7 +112,7 @@ a:hover {
   justify-content: center;
   flex: none;
   width: 48px;
-  height: 48px;
+  height: 72px;
   border: 1px dashed var(--color-ink-muted);
   color: var(--color-ink-muted);
   font-family: var(--font-label);
@@ -121,29 +120,20 @@ a:hover {
 }
 
 @media (min-width: 768px) {
-  .header-row {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
   .header-brand {
     gap: var(--space-card);
   }
 
-  .header-logo {
-    max-width: 160px;
+  .header-logo,
+  .header-logo-placeholder {
+    height: 88px;
   }
 }
 
 @media (min-width: 1024px) {
-  .header-logo {
-    height: 56px;
-  }
-
+  .header-logo,
   .header-logo-placeholder {
-    width: 56px;
-    height: 56px;
+    height: 96px;
   }
 }
 

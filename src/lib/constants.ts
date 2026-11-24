@@ -4,7 +4,7 @@ export const INTRO_TEXT =
   '수현중 학생들의 정보 수업 및 동아리 작품 온라인 전시페이지입니다. 다양한 작품을 즐기고 후기를 남겨 주세요.'
 
 // 후기 작성 구글 폼 주소. 폼을 만든 뒤 여기에 넣는다. 비어 있으면 후기 버튼이 눌리지 않는다.
-export const FEEDBACK_FORM_URL = ''
+export const FEEDBACK_FORM_URL = 'https://forms.gle/YzVerQQfSd9bt9HA7'
 
 // 후기 버튼 문구 (헤더와 이벤트 안내 상자에 함께 쓰인다)
 export const FEEDBACK_BUTTON_LABEL = '후기 이벤트 참여 ↗'

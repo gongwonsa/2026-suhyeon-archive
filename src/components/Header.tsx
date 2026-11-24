@@ -3,10 +3,9 @@ import { Link, useMatch } from 'react-router-dom'
 import { INTRO_TEXT, SITE_TITLE } from '../lib/constants'
 import { FeedbackLink } from './FeedbackEvent'
 
-const LOGO_URL = `${import.meta.env.BASE_URL}logo.png`
-
-// public/logo.png가 있으면 보여 준다. 없으면 배포 사이트에서는 자리를 비우고, 개발 화면에서만 자리 표시를 보여 준다.
-function Logo() {
+// 학생이 그린 전시 캐릭터. 제목 왼쪽은 public/logo-left.png, 오른쪽은 public/logo-right.png.
+// 파일이 없으면 배포 사이트에서는 자리를 비우고, 개발 화면에서만 자리 표시를 보여 준다.
+function Logo({ file, alt }: { file: string; alt: string }) {
   const [missing, setMissing] = useState(false)
   if (missing) {
     return import.meta.env.DEV ? (
@@ -15,7 +14,14 @@ function Logo() {
       </span>
     ) : null
   }
-  return <img className="header-logo" src={LOGO_URL} alt="전시 로고" onError={() => setMissing(true)} />
+  return (
+    <img
+      className="header-logo"
+      src={`${import.meta.env.BASE_URL}${file}`}
+      alt={alt}
+      onError={() => setMissing(true)}
+    />
+  )
 }
 
 export function Header() {
@@ -27,10 +33,11 @@ export function Header() {
       <div className="page-width">
         <div className="header-row">
           <div className="header-brand">
-            <Logo />
+            <Logo file="logo-left.png" alt="전시 캐릭터: 텔레비전" />
             <TitleTag className="page-title header-title">
               <Link to="/works">{SITE_TITLE}</Link>
             </TitleTag>
+            <Logo file="logo-right.png" alt="전시 캐릭터: 기린" />
           </div>
           <nav className="header-links" aria-label="바로가기">
             <FeedbackLink className="header-link header-link-primary" />
